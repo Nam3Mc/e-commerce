@@ -24,7 +24,7 @@ export class OrdersRepository {
         return await this.ordersDB.find();
     }
 
-    async addOrder(newOrder: NewOrderDto): Promise<any> {
+    async addOrder(newOrder: NewOrderDto): Promise<Omit< OrderDetail, "product_">> {
 
         // we received user id and an array with produts id
         // we sparate then using destructuring 
@@ -34,44 +34,35 @@ export class OrdersRepository {
         // there is the posibility to add a verification if 
         const user: User = await this.usersDB.getUserById(user_id)
 
+        // creating an ew detais Order we are able to add price 
+        // and items to the order before saving it with for loop
+        const newDetails = new OrderDetail;
+        newDetails.product_ = []
+        newDetails.price = 0
+
         // if user is verified we create the order and add the user data
         // and date or other field can be modified
         const order = new Order;
         order.user_ = user
         order.date = Date()
-        console.log(order)
+        order.orderDetails_ = newDetails
+
+        // for loop iterate over orderdetails_ and get each item add 
+        // them to the details order list calculate the total and 
+        // reduce the stock quantity of products saving changes in productsDB
+        for ( const id of orderDetails_ ) {
+            const product: Product = await this.productsDB.getProductById(id.id)
+            newDetails.product_.push(product)
+            newDetails.price += product.price / 1 ;
+            product.stock -= 1;
+            this.productsDB.saveProduct(product);
+        }
 
         // the order is needed to be save 
-        // i have issues here ebcause the user is ot receiving the order id
-        // i need t sorted it here before moving forward.
-        await this.ordersDB.save(order)
+        await this.orderDetailsDB.addOrderDetails(newDetails);
+        await this.ordersDB.save(order);
 
-        // now user should be asigned in order_id the id for this order
-        user.orders_ = [order]
-        console.log(user)
-        await this.usersDB.saveOrder(user)
-    
-        // const createdOrder: Order = await this.ordersDB.save(order)
-    // 
-        // let total: number = 0;
-        // const products: Product [] = []
-    // 
-        // const ids = orderDetails_
-        // for (let i = 0; i < orderDetails_.length; i++) {
-        //   const product: Product = await this.productsDB.getProductById(ids[i].id)
-        //   product.stock -= 1
-        //   products.push(product)
-        //   total += product.price / 1 
-        //   await this.productsDB.saveProduct(product)
-    //   }
-    // 
-        // const orderDetails: Omit<OrderDetail, "id"> = {
-            // price: total,
-            // order_: createdOrder,
-            // product_: products
-        // } 
- 
-        // await this.usersDB.saveOrder(user)
-        // await this.orderDetailsDB.addOrderDetails(orderDetails)
+        // i need to destructuring a create an order detais with price and id with an dto
+        return newDetails
     }
 }
