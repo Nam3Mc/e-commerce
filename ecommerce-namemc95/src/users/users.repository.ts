@@ -1,60 +1,40 @@
 import { Injectable } from "@nestjs/common";
-import { IUser } from "./interfaces/user.interface";
-import { IUserDtoCopy } from "./dtos/user.dto copy";
-import { IUserDto } from "./dtos/user.dto";
 import { IAuth } from "src/auth/interface/auth.interface";
+import { User } from "./entities/user.entity";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { IPersonalInfo} from "./dtos/personalInfo.dto";
+import { IPasswordDto } from "./dtos/password.dto";
+import { IAddressDto } from "./dtos/address.dto";
 
 @Injectable()
 export class UserRepository {
-
-    private users: IUser[] = [
-        {
-            id: 1,
-            email: "user1@example.com",
-            name: "User One",
-            password: "password1",
-            address: "123 Main St",
-            phone: "+1234567890",
-            country: "Country A",
-            city: "City X"
-        },
-        {
-            id: 2,
-            email: "user2@example.com",
-            name: "User Two",
-            password: "password2",
-            address: "456 Elm St",
-            phone: "+1987654321",
-            country: "Country B",
-            city: "City Y"
-
-        },
-        {
-            id: 3,
-            email: "user3@example.com",
-            name: "User Three",
-            password: "password3",
-            address: "789 Oak St",
-            phone: "+1122334455",
-            country: "Country C",
-            city: "City Z"
-        }
-    ]
     
-    async getUsers(): Promise<IUserDto []> {
+    // in constructor is where we need to inject our DB entity
+    constructor(
+        // this line injetable works calling the entity in oir DB
+        @InjectRepository(User)
+        // then we need to declare our DB name
+        private usersDB: Repository<User>
+    ) {}
+    
+    async getUsers(): Promise<Omit<User [], "password">> {
 
-        const usersWitoutPassword: Omit<IUser, "password"> [] = []
 
-        for (const user of this.users) {
-            const {password, ...userWithoutPassword} = user
-            usersWitoutPassword.push(userWithoutPassword)
-        }
 
-        return usersWitoutPassword
+        // pages the first number is the page 
+        // second number limit per pages
+        const start = 1 * 5
+        const end = start + 5
+
+        const users: User[] = (await this.usersDB.find()).slice(start, end);
+        return users
     }
 
     async getUserCredentials( email: string): Promise<IAuth> {
-        const user: IUser = await this.users.find( (user) => user.email === email)
+        const user: User = await this.usersDB.findOne({
+            where: {email: email}
+        })
         if (!user) {
             throw new Error("Email or Password Incorrect")
         } else {
@@ -63,37 +43,71 @@ export class UserRepository {
         }
     } 
 
-    async getUserById (id: number) {
-        return this.users.find( (user) => user.id === id);
+    async getUserById (id: string): Promise<User> {
+        const user: User = await this.usersDB.findOne({ 
+            where: { id: id}
+         })
+        return user
     }
 
-    async createUser (user: Omit<IUser, "id"> ): Promise<Omit<IUser, "password">> {
-        const id = this.users.length + 1;
-        const newUser = {id, ...user}
-        this.users.push(newUser)
-        const { password, ...userWitoutPassword} = newUser;
+    async createUser (user: Omit<User, "id, order" > ): Promise<Omit<User, "password">> {
+        this.usersDB.save(user)
+        const { password, ...userWitoutPassword} = user;
         return userWitoutPassword
     }
 
-    async updateUserInfo (id: number, user: IUserDtoCopy): Promise<number> {
+    async updateUserPersonalInformation (personalInfo: IPersonalInfo): Promise<void> {
 
-        const { email, name, password, phone, country, city} = user
-        const updateUser = this.users.find((user) => user.id === id);
+        // destructuring on personal infor reived
+        const {name, email, phone} = personalInfo
+        // getting the user by email
+        const user: User = await this.usersDB.findOne({
+            where: {email: email}
+        })
 
-        updateUser.id = id;
-        updateUser.email = email;
-        updateUser.name = name;
-        updateUser.password = password;
-        updateUser.phone = phone;
-        updateUser.country = country;
-        updateUser.city = city;
+        // asigning new values 
+        user.name = name
+        user.email = email
+        user.phone = phone
 
-        return id
+        // sseving user's changes
+        this.usersDB.save(user)
+
+        console.log(user)
     }
 
-    async deleteUser(id: number) {
-        const user = this.users.findIndex((user) => user.id === id)
-        this.users.splice(user, 1);
+    async updatePassword (passwordUpdate: IPasswordDto): Promise<void> {
+        
+        const { id, password, newPassword} = passwordUpdate
+        const user = await this.getUserById(id)
+        if (user.password !== password) {
+            throw new Error ("Password does not match")
+        } else {
+            user.password = newPassword
+            this.usersDB.save(user)
+        }
     }
 
+    async updateAddress (addressUpdate: IAddressDto): Promise<void>  {
+
+        const { id, address, country, city } = addressUpdate;
+        const user = await this.getUserById(id);
+
+        user.address = address
+        user.country = country
+        user.city = city
+
+        this.usersDB.save(user)
+    }
+
+
+    async deleteUser(id: string): Promise<void> {
+        const user = await this.usersDB.findOneBy({id})
+        this.usersDB.delete(user);
+        console.log("User deleted")
+    }
+
+    async saveOrder(data): Promise<void> {
+       await this.usersDB.save(data)
+    } 
 }

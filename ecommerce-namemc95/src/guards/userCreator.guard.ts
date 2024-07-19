@@ -1,11 +1,11 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Request } from "express";
 import { Observable } from "rxjs";
-import { IUser } from "src/users/interfaces/user.interface";
+import { User } from "src/users/entities/user.entity";
 
 const validateNewUser = (request: Request) => {
 
-    const expectedKeys: (keyof IUser)[] =[
+    const expectedKeys: (keyof User)[] =[
         "email",
         "name",
         "password",
@@ -15,8 +15,8 @@ const validateNewUser = (request: Request) => {
         "city"
     ];
 
-    const user: Omit<IUser, "id"> = request.body;
-    const userKeys = Object.keys(user) as (keyof IUser)[];
+    const user: Omit<User, "id"> = request.body;
+    const userKeys = Object.keys(user) as (keyof User)[];
 
     for (const key of expectedKeys) {
         if (!user[key]) {

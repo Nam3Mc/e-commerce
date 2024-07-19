@@ -1,7 +1,7 @@
 export interface IUserDto {
-    id: number
-    email: string
     name: string
+    email: string
+    password: string
     address: string
     phone: string
     country: string

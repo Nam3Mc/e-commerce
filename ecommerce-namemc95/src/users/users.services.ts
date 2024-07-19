@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "./users.repository";
-import { IUser } from "./interfaces/user.interface";
-import { IUserDtoCopy } from "./dtos/user.dto copy";
+import { User } from "./entities/user.entity";
+import { IPersonalInfo } from "./dtos/personalInfo.dto";
 
 @Injectable()
 export class UserServices {
@@ -10,23 +10,23 @@ export class UserServices {
         private userRepository: UserRepository
     ) {}
 
-    getUsers() {
+    getUsers(): Promise<User[]> {
         return this.userRepository.getUsers();
     }
 
-    getById(id: number) {
+    getById(id: string) {
         return this.userRepository.getUserById(id);
     }
 
-    createUser(user: IUser): Promise<Omit<IUser, "password">> {
+    createUser(user: User): Promise<Omit<User, "password">> {
         return this.userRepository.createUser(user);
     }
 
-    updateUser(id: number, user: IUserDtoCopy): Promise<number> {
-        return this.userRepository.updateUserInfo(id, user)
+    updatePersonalInfo(personalInfo: IPersonalInfo): Promise<void> {
+        return  this.userRepository.updateUserPersonalInformation(personalInfo)
     }
 
-    deleteUser(id: number) {
+    deleteUser(id: string) {
         return this.userRepository.deleteUser(id)
     }
 }
