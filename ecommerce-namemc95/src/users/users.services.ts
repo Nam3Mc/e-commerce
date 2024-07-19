@@ -18,7 +18,7 @@ export class UserServices {
         return this.userRepository.getUserById(id);
     }
 
-    createUser(user: User): Promise<Omit<User, "password">> {
+    createUser(user: User): Promise<Partial<User>> {
         return this.userRepository.createUser(user);
     }
 

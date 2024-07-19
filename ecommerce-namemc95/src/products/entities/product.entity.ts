@@ -1,6 +1,7 @@
+import { table } from "console";
 import { Category } from "src/categories/entities/category.entity";
 import { OrderDetail } from "src/order-details/entities/order-detail.entity";
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
 
 @Entity({
@@ -11,50 +12,27 @@ export class Product {
     @PrimaryGeneratedColumn("uuid")
     id: string = uuid(); 
 
-    @Column(
-        {
-            length: 50,
-            nullable: true
-        }
-    )
+    @Column({ length: 50, nullable: true })
     name: string
     
-    @Column(
-        {
-            nullable:true
-        }
-    )
+    @Column({ nullable: true })
     description: string
 
-    @Column(
-        "decimal", 
-        { 
-            precision: 10, 
-            scale: 2,
-            nullable: true
-        }
-    )
+    @Column( "decimal", { precision: 10, scale: 2, nullable: true })
     price: number
 
-    @Column(
-        {
-            nullable: true
-        }
-    )
+    @Column({ nullable: true })
     stock: number
 
-    @Column({
-        default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjTeYUVmOczg3JN3PsE7QVwrdF_EwnbL0gAA&s"
-    })
+    @Column({ default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjTeYUVmOczg3JN3PsE7QVwrdF_EwnbL0gAA&s" })
     imgUrl: string
 
-    @OneToMany( () => Category, (category => category.product_ ))
-    @JoinColumn({ name: "category_id"})
+    // in this case the rowwill be addded to categories 
+    // who onws each product
+    @OneToMany( () => Category, (category) => category.product_ )
     category_: Category[]
-
-    @Column()
-    category_id: string
-
-    @ManyToMany( () => OrderDetail)
-    orderDetail_: OrderDetail[]
+    
 }
+
+// products has a relation manyToMany with order-details and 
+// order details will have the join table and will cal the prodcts array 

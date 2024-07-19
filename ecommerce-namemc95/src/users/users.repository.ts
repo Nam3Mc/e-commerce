@@ -27,7 +27,7 @@ export class UserRepository {
         const start = 1 * 5
         const end = start + 5
 
-        const users: User[] = (await this.usersDB.find()).slice(start, end);
+        const users: User[] = await this.usersDB.find();
         return users
     }
 
@@ -50,7 +50,7 @@ export class UserRepository {
         return user
     }
 
-    async createUser (user: Omit<User, "id, order" > ): Promise<Omit<User, "password">> {
+    async createUser (user: Partial<User> ): Promise<Partial<User>> {
         this.usersDB.save(user)
         const { password, ...userWitoutPassword} = user;
         return userWitoutPassword
@@ -102,8 +102,8 @@ export class UserRepository {
 
 
     async deleteUser(id: string): Promise<void> {
-        const user = await this.usersDB.findOneBy({id})
-        this.usersDB.delete(user);
+        const user:User = await this.usersDB.findOneBy({id})
+        // this.usersDB.delete(user);
         console.log("User deleted")
     }
 

@@ -25,40 +25,53 @@ export class OrdersRepository {
     }
 
     async addOrder(newOrder: NewOrderDto): Promise<any> {
+
+        // we received user id and an array with produts id
+        // we sparate then using destructuring 
         const {user_id, orderDetails_} = newOrder
 
+        // with user_id we can find an user 
+        // there is the posibility to add a verification if 
         const user: User = await this.usersDB.getUserById(user_id)
 
+        // if user is verified we create the order and add the user data
+        // and date or other field can be modified
         const order = new Order;
-        order.user_id = user.id
+        order.user_ = user
         order.date = Date()
+        console.log(order)
+
+        // the order is needed to be save 
+        // i have issues here ebcause the user is ot receiving the order id
+        // i need t sorted it here before moving forward.
         await this.ordersDB.save(order)
-// 
-        order.user_id = user.id;
-        order.date = Date()
-// 
-// 
-        const createdOrder: Order = await this.ordersDB.save(order)
-// 
-        let total: number = 0;
-        const products: Product [] = []
-// 
-        const ids = orderDetails_
-        for (let i = 0; i < orderDetails_.length; i++) {
-            const product: Product = await this.productsDB.getProductById(ids[i].id)
-            product.stock -= 1
-            products.push(product)
-            total += product.price / 1 
-            await this.productsDB.saveProduct(product)
-        }
-// 
-        const orderDetails: Omit<OrderDetail, "id"> = {
-            price: total,
-            order_: createdOrder,
-            product_: products
-        } 
- 
+
+        // now user should be asigned in order_id the id for this order
+        user.orders_ = [order]
+        console.log(user)
         await this.usersDB.saveOrder(user)
-        await this.orderDetailsDB.addOrderDetails(orderDetails)
+    
+        // const createdOrder: Order = await this.ordersDB.save(order)
+    // 
+        // let total: number = 0;
+        // const products: Product [] = []
+    // 
+        // const ids = orderDetails_
+        // for (let i = 0; i < orderDetails_.length; i++) {
+        //   const product: Product = await this.productsDB.getProductById(ids[i].id)
+        //   product.stock -= 1
+        //   products.push(product)
+        //   total += product.price / 1 
+        //   await this.productsDB.saveProduct(product)
+    //   }
+    // 
+        // const orderDetails: Omit<OrderDetail, "id"> = {
+            // price: total,
+            // order_: createdOrder,
+            // product_: products
+        // } 
+ 
+        // await this.usersDB.saveOrder(user)
+        // await this.orderDetailsDB.addOrderDetails(orderDetails)
     }
 }
