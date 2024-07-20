@@ -1,9 +1,12 @@
-import { Body, Controller,Delete,Get, Param, Post, Put, UseGuards } from "@nestjs/common";
+import { Body, Controller,Delete,Get, Param, Post, Put, Query, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserServices } from "./users.services";
 import { UserGuard } from "src/guards/userCreator.guard";
 import { User as UserEntity } from "./entities/user.entity";
 import { IPersonalInfo } from "./dtos/personalInfo.dto";
 import { AuthGuard } from "src/guards/auth.guard";
+import { PasswordInterceptor } from "src/interceptors/password.interceptor";
+import { IPasswordDto } from "./dtos/password.dto";
+import { IAddressDto } from "./dtos/address.dto";
 
 
 @Controller("users")
@@ -15,26 +18,40 @@ export class UserControllers {
 
     @Get()
     @UseGuards(AuthGuard)
-    getUser() {
-        return this.userService.getUsers();
+    @UseInterceptors(PasswordInterceptor)
+    getUser(@Query("page") page: number, @Query("limit") limit: number) {
+        return this.userService.getUsers(page, limit);
     }
 
     @Get(":id")
+    @UseGuards(AuthGuard)
     getUserById(@Param("id") id: string) {
         return this.userService.getById(id);
     }
 
     @Post()
-    @UseGuards( )
+    @UseGuards(UserGuard)
     createUser(
         @Body() user: UserEntity) {
         return this.userService.createUser(user);
     }
 
-    @Put(":id") 
-    @UseGuards(UserGuard, AuthGuard)
-    updateUser(@Param("id") id: string, @Body() personalInfo: IPersonalInfo) {
+    @Put("userinfo/:id") 
+    @UseGuards(AuthGuard,)
+    updateUser( @Param("id") id: string, @Body() personalInfo: IPersonalInfo) {
         return this.userService.updatePersonalInfo( personalInfo)
+    }
+        
+    @Put("userpassword/:id") 
+    @UseGuards(AuthGuard)
+    updatePassword(@Body() passwordUpdate: IPasswordDto, ) {
+        return this.userService.updatePassword(passwordUpdate)
+    }
+
+    @Put("useraddress/:id") 
+    @UseGuards(AuthGuard)
+    updateAddress(@Body() addressUpdate: IAddressDto) {
+        return this.userService.updateAddress(addressUpdate);
     }
 
     @Delete(":id")

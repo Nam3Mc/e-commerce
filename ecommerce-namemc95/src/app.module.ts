@@ -7,6 +7,7 @@ import { CategoriesModule } from './categories/categories.module';
 import { OrderDetailsModule } from './order-details/orderDetails.module';
 import typeOrmConfig from './config/typeorm';
 import { ProductsModule } from './products/products.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
 
@@ -25,6 +26,7 @@ import { ProductsModule } from './products/products.module';
         configService.get('typeorm') )
     }),
     
+    AuthModule,
     UserModules, 
     OrdersModule, 
     CategoriesModule, 

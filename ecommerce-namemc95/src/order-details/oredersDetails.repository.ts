@@ -13,7 +13,9 @@ export class OrderDetailRepository {
     ) {}
 
     async orderDetails(): Promise<OrderDetail[]> {
-        return await this.orderDetailsDB.find();
+        return await this.orderDetailsDB.find({
+            relations: ["product_"]
+        });
     }
 
     async addOrderDetails(orderDetails: Omit<OrderDetail, "id">): Promise<OrderDetail> {

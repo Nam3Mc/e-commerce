@@ -14,10 +14,11 @@ export class OrdersService {
   }
 
   getAll() {
-    return this.orderRepositiry.getOrder()
+    return this.orderRepositiry.orders();
   }
 
-  // findOne(id: number) {
-    // return `This action returns a #${id} order`;
-  // }
+  getOrderDetails(id: string) {
+    // console.log(id)
+    return this.orderRepositiry.getOrderById(id)
+  }
 }

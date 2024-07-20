@@ -20,8 +20,18 @@ export class OrdersRepository {
         private orderDetailsDB: OrderDetailRepository
     ) {}
 
-    async getOrder(): Promise<Order[]> {
-        return await this.ordersDB.find();
+    async orders(): Promise<Order []> {
+        return this.ordersDB.find();
+    }
+
+    async getOrderById(id: string): Promise<Order> {
+        console.log(id)
+        const order = await this.ordersDB.findOne({
+            where: {id: id}, 
+            relations: ["orderDetails_"]
+        })
+        console.log(order)
+        return order
     }
 
     async addOrder(newOrder: NewOrderDto): Promise<Omit< OrderDetail, "product_">> {
@@ -58,11 +68,11 @@ export class OrdersRepository {
             this.productsDB.saveProduct(product);
         }
 
-        // the order is needed to be save 
+        // first to have the rigth process first we need to save orderDetails
+        // then save the order and it create both correctly
         await this.orderDetailsDB.addOrderDetails(newDetails);
         await this.ordersDB.save(order);
 
-        // i need to destructuring a create an order detais with price and id with an dto
         return newDetails
     }
 }

@@ -1,9 +1,14 @@
 import { Injectable } from '@nestjs/common';
+import { AuthDto } from './dtos/auth.dto';
+import { AuthRepository } from './auth.repository';
 
 @Injectable()
 export class AuthService {
 
-  create() {
-    return 'This action adds a new auth';
+  constructor( private readonly authRepository: AuthRepository
+  ) {}
+
+  singIn(auth: AuthDto) {
+    return this.authRepository.authValidator(auth)
   }
 }

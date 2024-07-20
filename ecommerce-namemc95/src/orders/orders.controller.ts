@@ -8,16 +8,16 @@ export class OrdersController {
 
   @Get()
   getOrders() {
-    return this.ordersService.getAll();
+    return this.ordersService.getAll()
+  }
+
+  @Get(":id")
+  getOneOrder(@Param("id") id: string ) {
+    return this.ordersService.getOrderDetails(id);
   }  
   
   @Post()
   create(@Body() userOrder: NewOrderDto) {
     return this.ordersService.addOrder(userOrder);
   }
-
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-    // return this.ordersService.findOne(+id);
-  // }
 }
