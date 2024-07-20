@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query, Put, ParseUUIDPipe } from '@nestjs/common';
 import { ProdutsService } from './products.service';
 import { NewProductDto } from './dto/newproduct.dto';
 import { ProductGuard } from 'src/guards/productCreator.guard';
@@ -15,7 +15,7 @@ export class ProdutsController {
   }
 
   @Get(":id")
-  getProductById(@Param("id") id: string ) {
+  getProductById(@Param("id", ParseUUIDPipe) id: string ) {
     return this.produtsService.getProductById(id);
   }
 

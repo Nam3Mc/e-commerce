@@ -2,11 +2,12 @@ import { Body, Controller,Delete,Get, Param, Post, Put, Query, UseGuards, UseInt
 import { UserServices } from "./users.services";
 import { UserGuard } from "src/guards/userCreator.guard";
 import { User as UserEntity } from "./entities/user.entity";
-import { IPersonalInfo } from "./dtos/personalInfo.dto";
+import { PersonalInfoDto } from "./dtos/personalInfo.dto";
 import { AuthGuard } from "src/guards/auth.guard";
 import { PasswordInterceptor } from "src/interceptors/password.interceptor";
-import { IPasswordDto } from "./dtos/password.dto";
-import { IAddressDto } from "./dtos/address.dto";
+import { PasswordDto } from "./dtos/password.dto";
+import { AddressDto } from "./dtos/address.dto";
+import { UserDto } from "./dtos/user.dto";
 
 
 @Controller("users")
@@ -32,25 +33,25 @@ export class UserControllers {
     @Post()
     @UseGuards(UserGuard)
     createUser(
-        @Body() user: UserEntity) {
+        @Body() user: UserDto) {
         return this.userService.createUser(user);
     }
 
     @Put("userinfo/:id") 
     @UseGuards(AuthGuard,)
-    updateUser( @Param("id") id: string, @Body() personalInfo: IPersonalInfo) {
+    updateUser( @Param("id") id: string, @Body() personalInfo: PersonalInfoDto) {
         return this.userService.updatePersonalInfo( personalInfo)
     }
         
     @Put("userpassword/:id") 
     @UseGuards(AuthGuard)
-    updatePassword(@Body() passwordUpdate: IPasswordDto, ) {
+    updatePassword(@Body() passwordUpdate: PasswordDto, ) {
         return this.userService.updatePassword(passwordUpdate)
     }
 
     @Put("useraddress/:id") 
     @UseGuards(AuthGuard)
-    updateAddress(@Body() addressUpdate: IAddressDto) {
+    updateAddress(@Body() addressUpdate: AddressDto) {
         return this.userService.updateAddress(addressUpdate);
     }
 

@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { UserRepository } from "./users.repository";
 import { User } from "./entities/user.entity";
-import { IPersonalInfo } from "./dtos/personalInfo.dto";
-import { IPasswordDto } from "./dtos/password.dto";
-import { IAddressDto } from "./dtos/address.dto";
+import { PersonalInfoDto } from "./dtos/personalInfo.dto";
+import { PasswordDto } from "./dtos/password.dto";
+import { AddressDto } from "./dtos/address.dto";
+import { UserDto } from "./dtos/user.dto";
 
 @Injectable()
 export class UserServices {
@@ -20,19 +21,19 @@ export class UserServices {
         return this.userRepository.getUserById(id);
     }
 
-    createUser(user: User): Promise<Partial<User>> {
+    createUser(user: UserDto): Promise<Partial<User>> {
         return this.userRepository.createUser(user);
     }
 
-    updatePersonalInfo(personalInfo: IPersonalInfo): Promise<string> {
+    updatePersonalInfo(personalInfo: PersonalInfoDto): Promise<string> {
         return this.userRepository.updateUserPersonalInformation(personalInfo)
     }
 
-    updatePassword(passwordUpdate: IPasswordDto): Promise<string> {
+    updatePassword(passwordUpdate: PasswordDto): Promise<string> {
         return this.userRepository.updatePassword(passwordUpdate)
     }
 
-    updateAddress(addressUpdate: IAddressDto): Promise<string> {
+    updateAddress(addressUpdate: AddressDto): Promise<string> {
         return this.userRepository.updateAddress(addressUpdate)
     }
 

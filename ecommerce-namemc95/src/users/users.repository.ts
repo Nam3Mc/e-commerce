@@ -2,11 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { User } from "./entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { IPersonalInfo} from "./dtos/personalInfo.dto";
-import { IPasswordDto } from "./dtos/password.dto";
-import { IAddressDto } from "./dtos/address.dto";
+import { PersonalInfoDto} from "./dtos/personalInfo.dto";
+import { PasswordDto } from "./dtos/password.dto";
+import { AddressDto } from "./dtos/address.dto";
 import { users } from "src/helpers/dataPreloader";
 import { AuthDto } from "src/auth/dtos/auth.dto";
+import { UserDto } from "./dtos/user.dto";
 
 @Injectable()
 export class UserRepository {
@@ -52,14 +53,22 @@ export class UserRepository {
         return user
     }
 
-    async createUser (user: Partial<User> ): Promise<Partial<User>> {
-        const newUser = await this.usersDB.save(user)
-        newUser.password = "*".repeat(user.password.length)
-        // const { password, ...userWitoutPassword} = newUser;
-        return newUser // or user withoutPassword
+    async createUser (user: UserDto ): Promise<Partial<User>> {
+        // This step was needed due the verification via pipes with Dtos
+        const newUser = new User;
+        newUser.email = user.email
+        newUser.name = user.name
+        newUser.password = user.password
+        newUser.phone = user.phone
+        newUser.address = user.address
+        newUser.country = user.country
+        newUser.city = user.city
+        const addedUser = await this.usersDB.save(newUser);
+        addedUser.password = "*".repeat(user.password.length)
+        return addedUser 
     }
 
-    async updateUserPersonalInformation (personalInfo: IPersonalInfo): Promise<string> {
+    async updateUserPersonalInformation (personalInfo: PersonalInfoDto): Promise<string> {
         // destructuring on personal infor reived
         const {name, email, phone} = personalInfo
         // getting the user by email
@@ -75,7 +84,7 @@ export class UserRepository {
         return user.id
     }
 
-    async updatePassword (passwordUpdate: IPasswordDto): Promise<string> {
+    async updatePassword (passwordUpdate: PasswordDto): Promise<string> {
         const { id, password, newPassword} = passwordUpdate
         const user = await this.getUserById(id)
         if (user.password !== password) {
@@ -87,7 +96,7 @@ export class UserRepository {
         }
     }
 
-    async updateAddress (addressUpdate: IAddressDto): Promise<string>  {
+    async updateAddress (addressUpdate: AddressDto): Promise<string>  {
         const { id, address, country, city } = addressUpdate;
         const user = await this.getUserById(id);
         user.address = address
