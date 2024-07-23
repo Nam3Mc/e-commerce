@@ -28,13 +28,14 @@ export class OrdersRepository {
         console.log(id)
         const order = await this.ordersDB.findOne({
             where: {id: id}, 
-            relations: ["orderDetails_"]
+            relations: ["orderDetails_", "orderDetails_.product_"]
         })
         console.log(order)
         return order
     }
 
-    async addOrder(newOrder: NewOrderDto): Promise<Omit< OrderDetail, "product_">> {
+    async addOrder(newOrder: NewOrderDto):  Promise<Order> { 
+    //Promise<Omit< OrderDetail, "product_">> {
 
         // we received user id and an array with produts id
         // we sparate then using destructuring 
@@ -73,6 +74,11 @@ export class OrdersRepository {
         await this.orderDetailsDB.addOrderDetails(newDetails);
         await this.ordersDB.save(order);
 
-        return newDetails
+        console.log(order)
+        console.log(newDetails)
+
+        const orderCreated = await this.getOrderById(order.id)
+
+        return orderCreated
     }
 }

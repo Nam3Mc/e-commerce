@@ -16,6 +16,19 @@ export class CategoriesRepository {
         const categories: Category [] = await this.categoriesDB.find();
         return categories;
     }
+    
+    async getCategoryByName(categoryName: string): Promise<Category> {
+        const exist = await this.validateCategory(categoryName)
+        if (!exist) {
+            throw new Error("Category does not exist")
+        }
+        else {
+            const category = await this.categoriesDB.findOne({
+                where: {name: categoryName}
+            })
+            return category
+        }
+    }
 
     async validateCategory(categoryName: string): Promise<boolean> {
         const category = await this.categoriesDB.findOne({
@@ -25,15 +38,17 @@ export class CategoriesRepository {
         return true
     }
 
-    async addCategory(category: NewCategoryDto): Promise<void> {
+    async addCategory(category: NewCategoryDto): Promise<void | boolean> {
         const {name} = category
         const exist: boolean = await this.validateCategory(name);
         if (exist) {
-            throw new Error ("This category does exist")
+            console.log(exist)
         }
         else {
             const newCategory: NewCategoryDto = category
             this.categoriesDB.save(newCategory)
+            console.log(exist)
         }
     }
+
 }

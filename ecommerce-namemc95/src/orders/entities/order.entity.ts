@@ -14,11 +14,13 @@ export class Order {
 
     @Column()
     date: string
+    // date: Date
 
     // many to one means an user may have many orders but order just one user
     // in this case the table with information will be the one owned many to one
     // here we just asigned the relationship and how it will be call in user's table
     @ManyToOne( () => User, (user) => user.orders_)
+    // @JoinColumn({ name: "user_id"})
     user_: User
 
     // this was done following the docuentation, means it is correct do no change it

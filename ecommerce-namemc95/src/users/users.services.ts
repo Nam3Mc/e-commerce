@@ -17,7 +17,7 @@ export class UserServices {
         return this.userRepository.getUsers(page, limit);
     }
 
-    getById(id: string) {
+    getUserById(id: string): Promise<User> {
         return this.userRepository.getUserById(id);
     }
 

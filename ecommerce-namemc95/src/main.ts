@@ -15,7 +15,7 @@ async function bootstrap() {
     // validations though pipes 
     exceptionFactory: (errors) => {
       const clearErrors = errors.map(error => {
-        return {prperty: error.property, constrain: error.constraints}
+        return {property: error.property, constrain: error.constraints}
       })
       return new BadRequestException({
         alert: "The following errors have been detected in your reuqets",

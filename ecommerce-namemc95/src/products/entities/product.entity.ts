@@ -12,25 +12,26 @@ export class Product {
     @PrimaryGeneratedColumn("uuid")
     id: string = uuid(); 
 
-    @Column({ length: 50, nullable: true })
+    @Column({ type: "varchar", length: 50, nullable: false, unique: true})
     name: string
     
-    @Column({ nullable: true })
+    @Column({ type: "text", nullable: false })
     description: string
 
-    @Column( "decimal", { precision: 10, scale: 2, nullable: true })
+    @Column( "decimal", { precision: 10, scale: 2, nullable: false })
     price: number
 
-    @Column({ nullable: true })
+    @Column({nullable: false })
     stock: number
 
-    @Column({ default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjTeYUVmOczg3JN3PsE7QVwrdF_EwnbL0gAA&s" })
+    @Column({ type: "text", default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTjTeYUVmOczg3JN3PsE7QVwrdF_EwnbL0gAA&s" })
     imgUrl: string
 
     // in this case the rowwill be addded to categories 
     // who onws each product
-    @OneToMany( () => Category, (category) => category.product_ )
-    category_: Category[]
+    @ManyToOne( () => Category, (category) => category.product_ )
+    // @JoinColumn()
+    category_: Category
     
 }
 

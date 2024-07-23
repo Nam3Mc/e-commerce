@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { User } from "./entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -6,7 +6,6 @@ import { PersonalInfoDto} from "./dtos/personalInfo.dto";
 import { PasswordDto } from "./dtos/password.dto";
 import { AddressDto } from "./dtos/address.dto";
 import { users } from "src/helpers/dataPreloader";
-import { AuthDto } from "src/auth/dtos/auth.dto";
 import { UserDto } from "./dtos/user.dto";
 
 @Injectable()
@@ -46,11 +45,10 @@ export class UserRepository {
     } 
 
     async getUserById (id: string): Promise<User> {
-        const user: User = await this.usersDB.findOne({ 
-            where: { id: id},
+        return await this.usersDB.findOne({ 
+            where: {  id: id },
             relations: ["orders_"]
-         })
-        return user
+        })
     }
 
     async createUser (user: UserDto ): Promise<Partial<User>> {

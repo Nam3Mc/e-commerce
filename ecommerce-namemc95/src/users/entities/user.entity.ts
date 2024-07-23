@@ -1,6 +1,5 @@
 import { Order } from "src/orders/entities/order.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
-import { v4 as uuid } from "uuid";
 
 @Entity({
     name: "users"
@@ -9,27 +8,27 @@ import { v4 as uuid } from "uuid";
 export class User {
 
     @PrimaryGeneratedColumn("uuid")
-    id: string = uuid();
+    id: string
     
-    @Column({length: 50, nullable: true})
+    @Column({ type: "varchar", length: 50, nullable: false})
     name: string
 
-    @Column({ length: 50, unique: true, nullable: true })
+    @Column({ type: "varchar", length: 50, unique: true, nullable: false })
     email: string
 
-    @Column({ length: 20, nullable: true })
+    @Column({ type: "varchar", length: 20, nullable: false })
     password:string
 
     @Column( "int" )
     phone: number
 
-    @Column({ length: 50 })
+    @Column({ type: "varchar", length: 50 })
     country: string
 
-    @Column()
+    @Column ({ type: "text"})
     address: string
 
-    @Column({ length: 50 })
+    @Column({ type: "varchar", length: 50 })
     city: string
 
     // like in the documentation we have the relation between 
@@ -37,6 +36,8 @@ export class User {
     // here we either add any column or table aand the information will be addedd
     // in the table where the relation is many to one, this case orders
     @OneToMany( () => Order, (order) => order.user_)
+    // @JoinColumn({ name: "orderId" })
     orders_: Order[]
+    
 
 }

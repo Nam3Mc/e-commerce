@@ -15,7 +15,7 @@ export class CategoriesService {
     
   }
 
-  create(category: NewCategoryDto): Promise<void> {
+  create(category: NewCategoryDto): Promise<void | boolean> {
     return this.categoriesRepository.addCategory(category)
   }
 }

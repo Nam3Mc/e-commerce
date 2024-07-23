@@ -1,14 +1,12 @@
-import { Body, Controller,Delete,Get, Param, Post, Put, Query, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller,Delete,Get, HttpException, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put, Query, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserServices } from "./users.services";
 import { UserGuard } from "src/guards/userCreator.guard";
-import { User as UserEntity } from "./entities/user.entity";
 import { PersonalInfoDto } from "./dtos/personalInfo.dto";
 import { AuthGuard } from "src/guards/auth.guard";
 import { PasswordInterceptor } from "src/interceptors/password.interceptor";
 import { PasswordDto } from "./dtos/password.dto";
 import { AddressDto } from "./dtos/address.dto";
 import { UserDto } from "./dtos/user.dto";
-
 
 @Controller("users")
 
@@ -26,9 +24,14 @@ export class UserControllers {
 
     @Get(":id")
     @UseGuards(AuthGuard)
-    getUserById(@Param("id") id: string) {
-        return this.userService.getById(id);
+    async getUserById(@Param("id", ParseUUIDPipe) id: string) {
+        const user = await this.userService.getUserById(id);
+        if ( !user ) {
+            console.log("do")
+        }
+        return user
     }
+
 
     @Post()
     @UseGuards(UserGuard)

@@ -4,25 +4,52 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { MoreThan, Repository } from "typeorm";
 import { NewProductDto } from "./dto/newproduct.dto";
 import { products } from "src/helpers/dataPreloader";
+import { CategoriesRepository } from "src/categories/categories.repository";
+import { NewCategoryDto } from "src/categories/dto/newCategory.dto";
 
 @Injectable()
 export class ProductsRepository{
 
     constructor (
         @InjectRepository(Product)
-        private productsDB: Repository<Product>
+        private productsDB: Repository<Product>,
+        private categoriesDB: CategoriesRepository
     ) {}
 
     async getAllgetProducts(page: number = 1, limit: number = 5): Promise<Product[]> {
-        const startIndex = (page -1) * limit
-        const endIndex = startIndex + limit
-        const prductIn: Product[] = await this.productsDB.find();
-        if (prductIn.length < 1) {
-            for (const product of products) {
-            await this.productsDB.save(product)
+
+        const productsDB: Product[] = await this.productsDB.find({
+            relations: ["category_"]
+        });
+        const categoriesName = []
+        if (productsDB.length < 1) {
+            for ( const product of products) {
+                if (!categoriesName.includes(product.category)) {
+                    categoriesName.push(product.category)
+                }
             }
+            for (const categoryName of categoriesName ) {
+                const categoryDto = new NewCategoryDto
+                categoryDto.name = categoryName
+                const category = await this.categoriesDB.addCategory(categoryDto)
+            }
+
+            for ( const product of products ) {
+                const { name, description, price, stock} = product
+                const category = await this.categoriesDB.getCategoryByName(product.category)
+                const newProduct = new Product
+                newProduct.name = name
+                newProduct.description = description
+                newProduct.price = price
+                newProduct.stock = stock
+                newProduct.category_ = category
+                const createdProduct = await this.productsDB.save(newProduct)
+            }
+
+            const refreshList = await this.productsDB.find()
+            return refreshList
         }
-        return prductIn.slice(startIndex, endIndex)
+        return productsDB
     } 
 
     async getProductById(id: string): Promise<Product> {

@@ -11,8 +11,11 @@ export class OrderDetail {
     @PrimaryGeneratedColumn("uuid")
     id: string = uuid();
 
-    @Column("decimal", { precision: 10, scale: 2, nullable: true })
+    @Column("decimal", { precision: 10, scale: 2, nullable: false })
     price: number
+
+    // missing one to one with order
+    
 
     // many to many required jointable and it can be declared jus by one side 
     // according with documentation example 

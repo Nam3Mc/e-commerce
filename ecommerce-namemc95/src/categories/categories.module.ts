@@ -12,5 +12,6 @@ import { Category } from './entities/category.entity';
   ],
   providers: [CategoriesService, CategoriesRepository],
   controllers: [CategoriesController],
+  exports: [CategoriesRepository]
 })
 export class CategoriesModule {}
