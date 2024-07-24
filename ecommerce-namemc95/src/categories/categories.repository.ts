@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import { Category } from "./entities/category.entity";
 import { Repository } from "typeorm";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -20,7 +20,7 @@ export class CategoriesRepository {
     async getCategoryByName(categoryName: string): Promise<Category> {
         const exist = await this.validateCategory(categoryName)
         if (!exist) {
-            throw new Error("Category does not exist")
+            throw new NotFoundException("Category not found")
         }
         else {
             const category = await this.categoriesDB.findOne({

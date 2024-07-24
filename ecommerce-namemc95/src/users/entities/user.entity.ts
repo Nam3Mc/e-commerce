@@ -16,7 +16,7 @@ export class User {
     @Column({ type: "varchar", length: 50, unique: true, nullable: false })
     email: string
 
-    @Column({ type: "varchar", length: 20, nullable: false })
+    @Column({ type: "varchar",  nullable: false })
     password:string
 
     @Column( "int" )
@@ -36,7 +36,7 @@ export class User {
     // here we either add any column or table aand the information will be addedd
     // in the table where the relation is many to one, this case orders
     @OneToMany( () => Order, (order) => order.user_)
-    // @JoinColumn({ name: "orderId" })
+    @JoinColumn()
     orders_: Order[]
     
 

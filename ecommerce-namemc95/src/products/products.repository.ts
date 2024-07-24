@@ -46,7 +46,7 @@ export class ProductsRepository{
                 const createdProduct = await this.productsDB.save(newProduct)
             }
 
-            const refreshList = await this.productsDB.find()
+            const refreshList: Product[] = await this.productsDB.find()
             return refreshList
         }
         return productsDB
@@ -88,15 +88,15 @@ export class ProductsRepository{
     }
 
     async updateProduct(productInfo: Partial<Product>): Promise<string> {
-        const { id, name, description, price, stock, imgUrl} = productInfo
-        const product = await this.getProductById(id)
-        product.name = name
-        product.description = description
-        product.price = price
-        product.stock = stock
-        product.imgUrl = imgUrl
-        await this.productsDB.save(product);
-        return id
+        const product = await this.getProductById(productInfo.id)
+        product.name = productInfo.name
+        product.description = productInfo.description
+        product.price = productInfo.price
+        product.stock = productInfo.stock
+        product.imgUrl = productInfo.imgUrl
+        product.category_ = productInfo.category_
+        await this.productsDB.save(productInfo);
+        return productInfo.id
     }
 
     async deleteProduct(id:string): Promise<string> {

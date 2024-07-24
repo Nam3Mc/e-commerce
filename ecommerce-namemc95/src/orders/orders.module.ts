@@ -13,9 +13,10 @@ import { OrderDetailsModule } from 'src/order-details/orderDetails.module';
     TypeOrmModule.forFeature([Order]),
     UserModules,
     ProductsModule,
-    OrderDetailsModule
+    OrderDetailsModule,
   ],
   providers: [OrdersService, OrdersRepository],
   controllers: [OrdersController],
+  exports: [ OrdersRepository]
 })
 export class OrdersModule {}

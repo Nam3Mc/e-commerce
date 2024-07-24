@@ -5,6 +5,7 @@ import { PersonalInfoDto } from "./dtos/personalInfo.dto";
 import { PasswordDto } from "./dtos/password.dto";
 import { AddressDto } from "./dtos/address.dto";
 import { UserDto } from "./dtos/user.dto";
+import { AuthDto } from "src/auth/dtos/auth.dto";
 
 @Injectable()
 export class UserServices {
@@ -23,6 +24,10 @@ export class UserServices {
 
     createUser(user: UserDto): Promise<Partial<User>> {
         return this.userRepository.createUser(user);
+    }
+
+    signIn(credentials: AuthDto) {
+        return this.userRepository.signIn(credentials);
     }
 
     updatePersonalInfo(personalInfo: PersonalInfoDto): Promise<string> {

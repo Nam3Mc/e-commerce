@@ -1,3 +1,4 @@
+import { File } from "src/files/entities/files.entity";
 import { OrderDetail } from "src/order-details/entities/order-detail.entity";
 import { User } from "src/users/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -29,4 +30,7 @@ export class Order {
     @OneToOne( () => OrderDetail)
     @JoinColumn()
     orderDetails_: OrderDetail 
+
+    @OneToMany( () => File, (file) => file.order_)
+    files_: File[] 
 }

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable, NotFoundException } from "@nestjs/common";
 import { User } from "./entities/user.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -7,6 +7,9 @@ import { PasswordDto } from "./dtos/password.dto";
 import { AddressDto } from "./dtos/address.dto";
 import { users } from "src/helpers/dataPreloader";
 import { UserDto } from "./dtos/user.dto";
+import { AuthRepository } from "src/auth/auth.repository";
+import { AuthDto } from "src/auth/dtos/auth.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class UserRepository {
@@ -15,7 +18,9 @@ export class UserRepository {
     // It is declared private and a name is asigned
     constructor(
         @InjectRepository(User)
-        private usersDB: Repository<User>
+        private usersDB: Repository<User>,
+        private jswServices: JwtService,
+        private authRepository: AuthRepository
     ) {}
 
     async getUsers(page: number = 1, limit: number = 5): Promise<Partial<User []>> {
@@ -30,17 +35,16 @@ export class UserRepository {
         return userIn.slice(startIndex, endIndex)
     }     
 
-    async validateCredentials( email: string, password: string ): Promise<boolean> {
+    async validateEmail( email: string): Promise<User> {
         const user: User = await this.usersDB.findOne({
             where: {email: email}
         })
+        
         if (!user) {
-            return false
+            // return false
+            throw new NotFoundException("User or password incorrect")
         } else {
-            if ( password !== user.password) {
-                return false
-            }
-            return true
+            return user
         }
     } 
 
@@ -52,18 +56,43 @@ export class UserRepository {
     }
 
     async createUser (user: UserDto ): Promise<Partial<User>> {
-        // This step was needed due the verification via pipes with Dtos
-        const newUser = new User;
-        newUser.email = user.email
-        newUser.name = user.name
-        newUser.password = user.password
-        newUser.phone = user.phone
-        newUser.address = user.address
-        newUser.country = user.country
-        newUser.city = user.city
-        const addedUser = await this.usersDB.save(newUser);
-        addedUser.password = "*".repeat(user.password.length)
-        return addedUser 
+        const emailExist = await this.validateEmail(user.email)
+        if (emailExist) {
+            throw new BadRequestException("Email is already in use")
+        }
+        else {
+            
+            const hashedPassword = await this.authRepository.signUp(user.password)
+
+            const newUser = new User;
+            newUser.email = user.email
+            newUser.name = user.name
+            newUser.password = hashedPassword
+            newUser.phone = user.phone
+            newUser.address = user.address
+            newUser.country = user.country
+            newUser.city = user.city
+            const addedUser = await this.usersDB.save(newUser);
+            addedUser.password = "*".repeat(user.password.length)
+            return addedUser 
+        }
+    }
+
+    async signIn(credentials: AuthDto) {
+        const user = await this.validateEmail(credentials.email)
+        if (!user) {
+            throw new NotFoundException("Email or password incorect")
+        }
+        else {
+            const validatedPassword = await this.authRepository.signIn(user.password, credentials.password)
+            const userPayLoad ={
+                sub: user.id,
+                id: user.id,
+                email: user.email
+            }
+            const token = this.jswServices.sign(userPayLoad)
+            return { success: "User successfuly logged", token}
+        }
     }
 
     async updateUserPersonalInformation (personalInfo: PersonalInfoDto): Promise<string> {

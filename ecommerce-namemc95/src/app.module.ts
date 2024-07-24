@@ -8,6 +8,8 @@ import { OrderDetailsModule } from './order-details/orderDetails.module';
 import typeOrmConfig from './config/typeorm';
 import { ProductsModule } from './products/products.module';
 import { AuthModule } from './auth/auth.module';
+import { FilesModule } from './files/files.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
 
@@ -31,7 +33,13 @@ import { AuthModule } from './auth/auth.module';
     OrdersModule, 
     CategoriesModule, 
     OrderDetailsModule, 
-    ProductsModule
+    ProductsModule,
+    FilesModule,
+    JwtModule.register({
+      global: true,
+      signOptions: {expiresIn: "1h"},
+      secret: process.env.JWT_SECRET
+    })
   ],
 
   controllers: [],

@@ -1,4 +1,4 @@
-import { Body, Controller,Delete,Get, HttpException, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put, Query, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller,Delete,Get, HttpException, HttpStatus, NotFoundException, Param, ParseUUIDPipe, Post, Put, Query, Req, UseGuards, UseInterceptors } from "@nestjs/common";
 import { UserServices } from "./users.services";
 import { UserGuard } from "src/guards/userCreator.guard";
 import { PersonalInfoDto } from "./dtos/personalInfo.dto";
@@ -7,6 +7,9 @@ import { PasswordInterceptor } from "src/interceptors/password.interceptor";
 import { PasswordDto } from "./dtos/password.dto";
 import { AddressDto } from "./dtos/address.dto";
 import { UserDto } from "./dtos/user.dto";
+import { AuthDto } from "src/auth/dtos/auth.dto";
+import { Request } from "express";
+import { User } from "./entities/user.entity";
 
 @Controller("users")
 
@@ -18,26 +21,29 @@ export class UserControllers {
     @Get()
     @UseGuards(AuthGuard)
     @UseInterceptors(PasswordInterceptor)
-    getUser(@Query("page") page: number, @Query("limit") limit: number) {
+    getUser(@Query("page") page: number, @Query("limit") limit: number, @Req() reuquest: Request & {user:User}) {
+        
+        console.log(reuquest.user)
+
         return this.userService.getUsers(page, limit);
     }
 
     @Get(":id")
     @UseGuards(AuthGuard)
     async getUserById(@Param("id", ParseUUIDPipe) id: string) {
-        const user = await this.userService.getUserById(id);
-        if ( !user ) {
-            console.log("do")
-        }
-        return user
+        return await this.userService.getUserById(id);
     }
 
 
-    @Post()
+    @Post("signup")
     @UseGuards(UserGuard)
-    createUser(
-        @Body() user: UserDto) {
+    createUser( @Body() user: UserDto) {
         return this.userService.createUser(user);
+    }
+
+    @Post("signin")
+    singIn( @Body() credential: AuthDto) {
+        return this.userService.signIn(credential);
     }
 
     @Put("userinfo/:id") 

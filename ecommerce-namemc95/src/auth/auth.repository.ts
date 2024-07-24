@@ -1,19 +1,31 @@
-import { Injectable } from "@nestjs/common";
-import { UserRepository } from "src/users/users.repository";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { AuthDto } from "./dtos/auth.dto";
+import * as bcrypt from "bcrypt"
+import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
 
 @Injectable()
 export class AuthRepository {
-    constructor( private userRepository: UserRepository) {}
 
     async authValidator(auth: AuthDto) {
-        const {email, password} = auth
-        const isAuthorized = await this.userRepository.validateCredentials(email, password)
-        if (!isAuthorized) {
-            return ("Invalid Email or Password")
-        } else {
-            return ("You have logged successfuly")
+    }
+
+    async signUp(password: string): Promise<string> {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        if (!hashedPassword) {
+            throw new BadRequestException("Password could not be hashed")
+        }
+        else {
+            return hashedPassword
         }
     }
 
+    async signIn(passwordDB: string, password: string) {
+        const validatedPassword = await bcrypt.compare(password, passwordDB)
+        if (!validatedPassword) {
+            throw new NotFoundException("Email or password incorrect")
+        }
+        else {
+            return ("User loggued successfuly")
+        }
+    }
 }
