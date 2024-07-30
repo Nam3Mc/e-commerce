@@ -1,78 +1,78 @@
-import { IsEmail, IsInt, IsNotEmpty, IsString, Matches, MaxLength, MinLength, Validate } from "class-validator"
-import { MatchPassword } from "../../decorators/matchPassword.decorator"
-import { ApiProperty } from "@nestjs/swagger"
+import { IsEmail, IsInt, IsNotEmpty, IsString, Matches, MaxLength, MinLength, Validate } from "class-validator";
+import { MatchPassword } from "../../decorators/matchPassword.decorator";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class UserDto {
 
     @ApiProperty({
-        description: "It must be your full namme",
+        description: "It must be your full name, between 3 and 80 characters.",
         example: "John Doe"
     })
     @IsNotEmpty()
     @IsString()
     @MinLength(3)
     @MaxLength(80)
-    name: string
+    name: string;
 
     @ApiProperty({
-        description: "Email must be an unique and valid email",
+        description: "Email must be a unique and valid email.",
         example: "valid@email.com"
     })
     @IsNotEmpty()
     @IsEmail()
-    email: string
+    email: string;
 
     @ApiProperty({
-        description: "Password must be minimun 8 charapters long and max 15, it must includes unless, one capital letter, one special charapterand one number",
+        description: "Password must be between 8 and 15 characters long, including at least one uppercase letter, one lowercase letter, one number, and one special character.",
         example: "my*Passw0rd"
     })
     @IsNotEmpty()
     @IsString()
-     @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/, 
-        { message: "Password must includes, unless one capital leter, one number and one spetial charapter [!@#$%^&*], it mus be minimun 8 charapters long and maximun 15"}
+    @Matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,15}$/, 
+        { message: "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character [!@#$%^&*]. It must be between 8 and 15 characters long." }
     )
-    password: string
+    password: string;
 
     @ApiProperty({
-        description: "This password needs to match with password",
+        description: "This password needs to match the password field.",
         example: "my*Passw0rd"
     })
-    @Validate(MatchPassword,["password"])
-    confirmPassword: string
+    @Validate(MatchPassword, ["password"])
+    confirmPassword: string;
 
     @ApiProperty({
-        description: "Your personal address",
+        description: "Your personal address, between 3 and 80 characters.",
         example: "256 Road Street N"
     })
     @IsNotEmpty()
     @IsString()
     @MinLength(3)
     @MaxLength(80)
-    address: string
+    address: string;
 
     @ApiProperty({
-        description: "Phone number must not includes spaces",
+        description: "Phone number must not include spaces.",
         example: "2506983215"
     })
     @IsNotEmpty()
     @IsInt()
-    phone: number
+    phone: number;
 
     @ApiProperty({
-        description: "It could be your current contry",
+        description: "Your current country, between 5 and 20 characters.",
         example: "Colombia"
     })
     @IsString()
     @MinLength(5)
     @MaxLength(20)
-    country: string
-    
+    country: string;
+
     @ApiProperty({
-        description: "It could be your current city",
+        description: "Your current city, between 5 and 20 characters.",
         example: "Cucuta"
     })
+    @IsString()
     @MinLength(5)
     @MaxLength(20)
-    @IsString()
-    city: string
+    city: string;
 }

@@ -24,6 +24,8 @@ export class ProdutsController {
     return this.produtsService.getProductById(id);
   }
 
+  @ApiBearerAuth()
+  @Rolls(Roll.Admin)
   @Post()
   @ApiBearerAuth()
   @UseGuards( AuthGuard, ProductGuard)
@@ -41,6 +43,7 @@ export class ProdutsController {
 
   @ApiBearerAuth()
   @Delete(":id")
+  @Rolls(Roll.Admin)
   @UseGuards(ProductGuard, AuthGuard, RollsGuard)
   deleteProduct(@Param("id") id: string) {
     return this.produtsService.deleteProduct(id);

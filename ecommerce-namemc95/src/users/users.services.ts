@@ -20,16 +20,16 @@ export class UserServices {
         return this.userRepository.getUserById(id);
     }
 
-    updatePersonalInfo(personalInfo: PersonalInfoDto): Promise<string> {
-        return this.userRepository.updateUserPersonalInformation(personalInfo)
+    updatePersonalInfo(id: string, personalInfo: PersonalInfoDto): Promise<string> {
+        return this.userRepository.updateUserPersonalInformation(id, personalInfo)
     }
 
-    updatePassword(passwordUpdate: PasswordDto): Promise<string> {
-        return this.userRepository.updatePassword(passwordUpdate)
+    updatePassword(id: string, passwordUpdate: PasswordDto): Promise<string> {
+        return this.userRepository.updatePassword(id, passwordUpdate)
     }
 
-    updateAddress(addressUpdate: AddressDto): Promise<string> {
-        return this.userRepository.updateAddress(addressUpdate)
+    updateAddress(id: string, addressUpdate: AddressDto): Promise<string> {
+        return this.userRepository.updateAddress(id, addressUpdate)
     }
 
     deleteUser(id: string): Promise<string> {

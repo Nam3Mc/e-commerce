@@ -66,10 +66,8 @@ export class UserRepository {
             return userWhithoutPassword
     }
 
-    async updateUserPersonalInformation (personalInfo: PersonalInfoDto): Promise<string> {
-        // destructuring on personal infor reived
+    async updateUserPersonalInformation (id: string, personalInfo: PersonalInfoDto): Promise<string> {
         const {name, email, phone} = personalInfo
-        // getting the user by email
         const user: User = await this.usersDB.findOne({
             where: {email: email}
         })
@@ -82,8 +80,8 @@ export class UserRepository {
         return user.id
     }
 
-    async updatePassword (passwordUpdate: PasswordDto): Promise<string> {
-        const { id, password, newPassword} = passwordUpdate
+    async updatePassword (id: string, passwordUpdate: PasswordDto): Promise<string> {
+        const { password, newPassword, newPaswordConfirmation} = passwordUpdate
         const user = await this.getUserById(id)
         if (user.password !== password) {
             throw new Error ("Password does not match")
@@ -94,8 +92,8 @@ export class UserRepository {
         }
     }
 
-    async updateAddress (addressUpdate: AddressDto): Promise<string>  {
-        const { id, address, country, city } = addressUpdate;
+    async updateAddress (id: string, addressUpdate: AddressDto): Promise<string>  {
+        const { address, country, city } = addressUpdate;
         const user = await this.getUserById(id);
         user.address = address
         user.country = country

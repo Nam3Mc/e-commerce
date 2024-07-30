@@ -42,21 +42,21 @@ export class UserControllers {
     @Put("userinfo/:id") 
     @UseGuards(AuthGuard,)
     updateUser( @Param("id") id: string, @Body() personalInfo: PersonalInfoDto) {
-        return this.userService.updatePersonalInfo( personalInfo)
+        return this.userService.updatePersonalInfo(id, personalInfo)
     }
         
     @ApiBearerAuth()
     @Put("userpassword/:id") 
     @UseGuards(AuthGuard)
-    updatePassword(@Body() passwordUpdate: PasswordDto, ) {
-        return this.userService.updatePassword(passwordUpdate)
+    updatePassword(@Param("id") id: string, @Body() passwordUpdate: PasswordDto, ) {
+        return this.userService.updatePassword(id, passwordUpdate)
     }
 
     @ApiBearerAuth()
     @Put("useraddress/:id") 
     @UseGuards(AuthGuard)
-    updateAddress(@Body() addressUpdate: AddressDto) {
-        return this.userService.updateAddress(addressUpdate);
+    updateAddress(@Param("id") id: string, @Body() addressUpdate: AddressDto) {
+        return this.userService.updateAddress(id, addressUpdate);
     }
 
     @ApiBearerAuth()
