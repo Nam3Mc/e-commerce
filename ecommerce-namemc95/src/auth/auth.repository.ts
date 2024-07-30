@@ -1,31 +1,56 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { AuthDto } from "./dtos/auth.dto";
 import * as bcrypt from "bcrypt"
-import { ExceptionsHandler } from "@nestjs/core/exceptions/exceptions-handler";
+import { UserDto } from "src/users/dtos/user.dto";
+import { UserRepository } from "src/users/users.repository";
+import { User } from "src/users/entities/user.entity";
+import { AuthDto } from "./dtos/auth.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthRepository {
 
-    async authValidator(auth: AuthDto) {
-    }
+    constructor( 
+        private userRepository: UserRepository,
+        private jswService: JwtService
+    ) {}
 
-    async signUp(password: string): Promise<string> {
-        const hashedPassword = await bcrypt.hash(password, 10)
-        if (!hashedPassword) {
-            throw new BadRequestException("Password could not be hashed")
+    async signUp(userDto: UserDto): Promise<Partial<User>> {
+        const userExist: boolean = await this.userRepository.validateEmail(userDto.email)
+
+        if (userExist) {
+            throw new BadRequestException("Email is already in use")
         }
         else {
-            return hashedPassword
+            const hashedPassword: string = await bcrypt.hash(userDto.password, 10)
+            const newUser = new User;
+            newUser.email = userDto.email
+            newUser.name = userDto.name
+            newUser.password = hashedPassword
+            newUser.phone = userDto.phone
+            newUser.address = userDto.address
+            newUser.country = userDto.country
+            newUser.city = userDto.city
+            const createdUser: Partial<User> = await this.userRepository.createUser(newUser)
+            return  createdUser
         }
     }
 
-    async signIn(passwordDB: string, password: string) {
-        const validatedPassword = await bcrypt.compare(password, passwordDB)
+    async signIn(authDto: AuthDto) {
+        const user: User = await this.userRepository.getUserByEmail(authDto.email)
+        const validatedPassword = await bcrypt.compare(authDto.password, user.password)
         if (!validatedPassword) {
             throw new NotFoundException("Email or password incorrect")
         }
         else {
-            return ("User loggued successfuly")
+            const userPayLoad = {
+                sub: user.id,
+                id: user.id,
+                email: user.email,
+                roll: user.roll
+            }
+            console.log(user.roll)
+            const token = this.jswService.sign(userPayLoad)
+            return {success: "User loggued successfuly", token} 
         }
     }
 }

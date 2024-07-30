@@ -1,19 +1,19 @@
 import { CanActivate, ExecutionContext, Injectable } from "@nestjs/common";
 import { Request } from "express";
 import { Observable } from "rxjs";
-import { IAuth } from "src/auth/interface/auth.interface";
+import { AuthDto } from "src/auth/dtos/auth.dto";
 
 // this code is to verify any request received to add new products 
 //  the product needs to macth the interface without id
 const validateCredentials = (request: Request) => {
-    const expectedKeys: (keyof IAuth)[] = [
+    const expectedKeys: (keyof AuthDto)[] = [
         "email",
         "password"
     ];
 
     // here we received the information throught body
-    const credentials: IAuth = request.body;
-    const credentialsKeys = Object.keys(credentials) as (keyof IAuth)[];
+    const credentials: AuthDto = request.body;
+    const credentialsKeys = Object.keys(credentials) as (keyof AuthDto)[];
 
     // First we verify if all teh keys are present
     for (const key of expectedKeys) {

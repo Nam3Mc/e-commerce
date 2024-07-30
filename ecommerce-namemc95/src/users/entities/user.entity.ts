@@ -1,4 +1,4 @@
-import { Order } from "src/orders/entities/order.entity";
+import { Order } from "../../orders/entities/order.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm"
 
 @Entity({
@@ -19,7 +19,7 @@ export class User {
     @Column({ type: "varchar",  nullable: false })
     password:string
 
-    @Column( "int" )
+    @Column( "bigint" )
     phone: number
 
     @Column({ type: "varchar", length: 50 })
@@ -39,5 +39,6 @@ export class User {
     @JoinColumn()
     orders_: Order[]
     
-
+    @Column({default: "user"})
+    roll: string
 }

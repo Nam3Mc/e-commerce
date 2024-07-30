@@ -1,7 +1,5 @@
-import { table } from "console";
-import { Category } from "src/categories/entities/category.entity";
-import { OrderDetail } from "src/order-details/entities/order-detail.entity";
-import { Column, Entity, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Category } from "../../categories/entities/category.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { v4 as uuid } from "uuid";
 
 @Entity({

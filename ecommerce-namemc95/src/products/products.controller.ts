@@ -4,7 +4,12 @@ import { NewProductDto } from './dto/newproduct.dto';
 import { ProductGuard } from 'src/guards/productCreator.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
 import { Product } from './entities/product.entity';
+import { RollsGuard } from 'src/guards/roles.guard';
+import { Rolls } from 'src/decorators/rolls.decorator';
+import { Roll } from 'src/enums/rolls.enum';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
+@ApiTags("Products")
 @Controller('products')
 export class ProdutsController {
   constructor(private readonly produtsService: ProdutsService) {}
@@ -20,18 +25,23 @@ export class ProdutsController {
   }
 
   @Post()
+  @ApiBearerAuth()
   @UseGuards( AuthGuard, ProductGuard)
   addProduct(@Body() createProdutDto: NewProductDto) {
     return this.produtsService.addProduct(createProdutDto);
   }
  
+  @ApiBearerAuth()
   @Put(":id")
-  @UseGuards(ProductGuard)
+  @Rolls(Roll.Admin)
+  @UseGuards(ProductGuard, AuthGuard, RollsGuard)
   updateProduct(@Body() productInfo: Product) {
     return this.produtsService.updateProduct(productInfo)
   }
 
+  @ApiBearerAuth()
   @Delete(":id")
+  @UseGuards(ProductGuard, AuthGuard, RollsGuard)
   deleteProduct(@Param("id") id: string) {
     return this.produtsService.deleteProduct(id);
   }  
