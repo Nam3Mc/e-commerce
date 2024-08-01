@@ -12,8 +12,9 @@ export class OrderDetailRepository {
         private orderDetailsDB: Repository<OrderDetail>
     ) {}
 
-    async orderDetails(): Promise<OrderDetail[]> {
+    async orderDetails(id: string): Promise<OrderDetail[]> {
         return await this.orderDetailsDB.find({
+            where: {id},
             relations: ["product_"]
         });
     }

@@ -10,8 +10,8 @@ export class OrderDetailsService {
 
   
 
-  getOrderDetails() {
-    return this.orderDetailsRepository.orderDetails()
+  getOrderDetails(id: string) {
+    return this.orderDetailsRepository.orderDetails(id)
   }
   
 }
