@@ -18,8 +18,8 @@ export class NewProductDto {
     description: string;
 
     @ApiProperty({
-        description: "The price of the product, must be an integer",
-        example: 999
+        description: "The price of the product",
+        example: 99.50
     })
     @IsInt()
     price: number;
