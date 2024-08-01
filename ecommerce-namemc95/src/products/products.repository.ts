@@ -21,6 +21,9 @@ export class ProductsRepository{
         const productsDB: Product[] = await this.productsDB.find({
             relations: ["category_"]
         });
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit
         const categoriesName = []
         if (productsDB.length < 1) {
             for ( const product of products) {
@@ -45,11 +48,8 @@ export class ProductsRepository{
                 newProduct.category_ = category
                 const createdProduct = await this.productsDB.save(newProduct)
             }
-
-            const refreshList: Product[] = await this.productsDB.find()
-            return refreshList
         }
-        return productsDB
+        return productsDB.slice(startIndex, endIndex)
     } 
 
     async getProductById(id: string): Promise<Product> {
