@@ -17,8 +17,11 @@ export class OrdersService {
     return this.orderRepositiry.orders();
   }
 
+  getUserOrders(id: string) {
+    return this.orderRepositiry.getUserOrders(id)
+  }
+
   getOrderDetails(id: string) {
-    // console.log(id)
     return this.orderRepositiry.getOrderById(id)
   }
 }

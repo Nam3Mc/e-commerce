@@ -32,9 +32,9 @@ export class NewProductDto {
     stock: number;
 
     @ApiProperty({
-        description: "The URL of the product image, must be a valid URL",
-        example: "https://example.com/laptop.jpg"
+        description: "Categories could be an exiten one or a new categorie",
+        example: "computer"
     })
-    @IsUrl()
-    imgUrl: string;
+    @IsString()
+    category: string;
 }

@@ -24,8 +24,12 @@ export class OrdersRepository {
         return this.ordersDB.find();
     }
 
+    async getUserOrders(id: string): Promise<Order[]> {
+        const user = await this.usersDB.getUserById(id);
+        return user.orders_
+    }
+
     async getOrderById(id: string): Promise<Order> {
-        console.log(id)
         const order = await this.ordersDB.findOne({
             where: {id: id}, 
             relations: ["orderDetails_", "orderDetails_.product_"]
@@ -35,32 +39,15 @@ export class OrdersRepository {
     }
 
     async addOrder(newOrder: NewOrderDto):  Promise<Order> { 
-    //Promise<Omit< OrderDetail, "product_">> {
-
-        // we received user id and an array with produts id
-        // we sparate then using destructuring 
         const {user_id, orderDetails_} = newOrder
-
-        // with user_id we can find an user 
-        // there is the posibility to add a verification if 
-        const user: User = await this.usersDB.getUserById(user_id)
-
-        // creating an ew detais Order we are able to add price 
-        // and items to the order before saving it with for loop
+        const user: Partial<User> = await this.usersDB.getUserById(user_id)
         const newDetails = new OrderDetail;
         newDetails.product_ = []
         newDetails.price = 0
-
-        // if user is verified we create the order and add the user data
-        // and date or other field can be modified
         const order = new Order;
         order.user_ = user
         order.date = Date()
         order.orderDetails_ = newDetails
-
-        // for loop iterate over orderdetails_ and get each item add 
-        // them to the details order list calculate the total and 
-        // reduce the stock quantity of products saving changes in productsDB
         for ( const id of orderDetails_ ) {
             const product: Product = await this.productsDB.getProductById(id.id)
             newDetails.product_.push(product)
@@ -68,17 +55,15 @@ export class OrdersRepository {
             product.stock -= 1;
             this.productsDB.saveProduct(product);
         }
-
-        // first to have the rigth process first we need to save orderDetails
-        // then save the order and it create both correctly
         await this.orderDetailsDB.addOrderDetails(newDetails);
         await this.ordersDB.save(order);
-
-        console.log(order)
-        console.log(newDetails)
-
         const orderCreated = await this.getOrderById(order.id)
-
         return orderCreated
+    }
+
+    async deleteOrder( id: string ) {
+        await this.ordersDB.delete({
+            user_: {id}
+        })
     }
 }

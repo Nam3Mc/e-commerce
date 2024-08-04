@@ -6,15 +6,13 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./entities/user.entity";
 
 @Module({
-    // whit this config we will conect the DB with our app
-    // in for fracture we wil tell what entities we want to bring 
     imports: [
         TypeOrmModule.forFeature([User])
     ],
 
     providers: [UserServices, UserRepository],
     controllers: [UserControllers],
-    exports: [UserRepository]
+    exports: [ UserRepository ]
 })
 
 export class UserModules{};

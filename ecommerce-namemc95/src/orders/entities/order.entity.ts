@@ -32,8 +32,8 @@ export class Order {
             email: "johndoe@example.com"
         }
     })
-    @ManyToOne(() => User, (user) => user.orders_)
-    user_: User;
+    @ManyToOne(() => User, (user) => user.orders_, { onDelete: "CASCADE"})
+    user_: Partial<User>;
 
     @ApiProperty({
         description: "The details of the order. This establishes a one-to-one relationship with the OrderDetail entity. Each order has a single set of order details.",
@@ -44,7 +44,7 @@ export class Order {
             price: 999.99
         }
     })
-    @OneToOne(() => OrderDetail)
+    @OneToOne(() => OrderDetail, {cascade: true, onDelete: "CASCADE"})
     @JoinColumn()
     orderDetails_: OrderDetail;
 

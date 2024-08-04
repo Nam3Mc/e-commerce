@@ -24,7 +24,7 @@ export class PasswordDto{
         example: "Passw0rd!"
     })
     @IsString()
-    @Validate(MatchPassword,["password"])
+    @Validate(MatchPassword,["newPassword"])
     newPaswordConfirmation: string
 
 }

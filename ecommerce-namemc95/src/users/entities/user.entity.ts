@@ -78,7 +78,7 @@ export class User {
             }
         ]
     })
-    @OneToMany(() => Order, (order) => order.user_)
+    @OneToMany(() => Order, (order) => order.user_, { cascade: true, onDelete: "CASCADE"})
     @JoinColumn()
     orders_: Order[];
     

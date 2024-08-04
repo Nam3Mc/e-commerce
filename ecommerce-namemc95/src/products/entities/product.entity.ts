@@ -53,6 +53,6 @@ export class Product {
     @ApiProperty({
         description: "The category to which the product belongs"
     })
-    @ManyToOne(() => Category, (category) => category.product_)
+    @ManyToOne(() => Category, (category) => category.product_, {cascade: true, onDelete: "CASCADE"})
     category_: Category;
 }

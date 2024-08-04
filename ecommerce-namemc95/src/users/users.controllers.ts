@@ -37,13 +37,6 @@ export class UserControllers {
     async getUserById(@Param("id", ParseUUIDPipe) id: string) {
         return await this.userService.getUserById(id);
     }
-
-    @ApiBearerAuth()
-    @Put("userinfo/:id") 
-    @UseGuards(AuthGuard,)
-    updateUser( @Param("id") id: string, @Body() personalInfo: PersonalInfoDto) {
-        return this.userService.updatePersonalInfo(id, personalInfo)
-    }
         
     @ApiBearerAuth()
     @Put("userpassword/:id") 

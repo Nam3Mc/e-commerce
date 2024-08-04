@@ -13,10 +13,7 @@ export class Category {
 
     @Column({ type: "varchar", length: 50, nullable: false, unique: true})
     name: string
-
-    // according with documentations products may have multiple categories
-    // but each categty just own one product at time 
-    // because that here will be the row with information 
-    @OneToMany ( () => Product, (product) => product.category_)
+    
+    @OneToMany ( () => Product, (product) => product.category_, { onDelete: "CASCADE"})
     product_: Product[]
 }

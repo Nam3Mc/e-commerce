@@ -16,12 +16,8 @@ export class UserServices {
         return this.userRepository.getUsers(page, limit);
     }
 
-    getUserById(id: string): Promise<User> {
+    getUserById(id: string): Promise<Partial<User>> {
         return this.userRepository.getUserById(id);
-    }
-
-    updatePersonalInfo(id: string, personalInfo: PersonalInfoDto): Promise<string> {
-        return this.userRepository.updateUserPersonalInformation(id, personalInfo)
     }
 
     updatePassword(id: string, passwordUpdate: PasswordDto): Promise<string> {

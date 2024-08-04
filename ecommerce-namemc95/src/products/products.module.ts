@@ -5,6 +5,8 @@ import { ProductsRepository } from './products.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
 import { CategoriesModule } from 'src/categories/categories.module';
+import { CloudinaryService } from './cloudinary.service';
+import { cloudinaryConfig } from 'src/config/cloudinary';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { CategoriesModule } from 'src/categories/categories.module';
   ],
   providers: [ProdutsService, 
     ProductsRepository,
+    cloudinaryConfig,
+    CloudinaryService
   ],
   controllers: [ProdutsController],
   exports: [ProductsRepository]

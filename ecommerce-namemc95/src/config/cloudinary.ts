@@ -13,7 +13,3 @@ export const cloudinaryConfig = {
         })
     }
 }
-
-// FOR THIS ONE WE NEED TO CREATE A SERVICE
-// COULD BE IN ROOT FOLDER OR ANY FOLDER WHERE IT WILL BE USED 
-// I WILL CREATE A FOLDER OR 
